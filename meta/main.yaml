@@ -1,0 +1,17 @@
+galaxy_info:
+  role_name: hetun-vpn
+  author: Kyle Jensen <kljensen@gmail.com>
+  description: OpenBSD IKEv2/IPSec VPN
+
+  license: The Unlicense
+
+  min_ansible_version: 2.3
+
+  platforms:
+  - name: OpenBSD
+    versions:
+    - 6.4
+
+  galaxy_tags: ["OpenBSD", "vpn", "ikev2", "ipsec"]
+
+dependencies: []
