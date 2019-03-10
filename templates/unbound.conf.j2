@@ -1,0 +1,99 @@
+# based on $OpenBSD: unbound.conf,v 1.7 2016/03/30 01:41:25 sthen Exp $
+
+server:
+    # tls-cert-bundle: /etc/ssl/cert.pem
+    tls-upstream: yes
+    rrset-roundrobin: yes
+    verbosity: 1
+
+	interface: 127.0.0.1
+    interface: 10.0.1.1
+	#interface: 127.0.0.1@5353	# listen on alternative port
+	interface: ::1
+	#do-ip6: no
+
+    num-threads: 2
+
+	# override the default "any" address to send queries; if multiple
+	# addresses are available, they are used randomly to counter spoofing
+	#outgoing-interface: 192.0.2.1
+	#outgoing-interface: 2001:db8::53
+
+	access-control: 0.0.0.0/0 refuse
+	access-control: 127.0.0.0/8 allow
+	access-control: 10.0.1.0/24 allow
+	access-control: ::0/0 refuse
+	access-control: ::1 allow
+
+	# Uncomment to enable qname minimisation.
+	# https://tools.ietf.org/html/draft-ietf-dnsop-qname-minimisation-08
+	#
+	qname-minimisation: yes
+
+    # Use prefetching, which I think will speed
+    # up requests for common domains.
+    prefetch: yes
+    prefetch-key: yes
+    msg-cache-size: 128k
+    msg-cache-slabs: 2
+    rrset-cache-size: 8m
+    rrset-cache-slabs: 2
+    key-cache-size: 32m
+    key-cache-slabs: 2
+    cache-min-ttl: 300
+
+	# Uncomment to enable DNSSEC validation.
+	#
+	#auto-trust-anchor-file: "/var/unbound/db/root.key"
+
+	# Serve zones authoritatively from Unbound to resolver clients.
+	# Not for external service.
+	#
+	{% if hetun_block_ads %}
+    include: /var/unbound/etc/ads.conf
+	{% endif %}
+	#local-zone: "local." static
+	#local-data: "mycomputer.local. IN A 192.0.2.51"
+	#local-zone: "2.0.192.in-addr.arpa." static
+	#local-data-ptr: "192.0.2.51 mycomputer.local"
+
+	# UDP EDNS reassembly buffer advertised to peers. Default 4096.
+	# May need lowering on broken networks with fragmentation/MTU issues,
+	# particularly if validating DNSSEC.
+	#
+	#edns-buffer-size: 1480
+
+	# Use TCP for "forward-zone" requests. Useful if you are making
+	# DNS requests over an SSH port forwarding.
+	#
+	#tcp-upstream: yes
+
+	# DNS64 options, synthesizes AAAA records for hosts that don't have
+	# them. For use with NAT64 (PF "af-to").
+	#
+	#module-config: "dns64 validator iterator"
+	#dns64-prefix: 64:ff9b::/96	# well-known prefix (default)
+	#dns64-synthall: no
+
+remote-control:
+	control-enable: yes
+	control-use-cert: no
+	control-interface: /var/run/unbound.sock
+
+# Use an upstream forwarder (recursive resolver) for specific zones.
+# Example addresses given below are public resolvers valid as of 2014/03.
+#
+forward-zone:
+  name: "." # Use for all queries
+  forward-tls-upstream: yes
+  # Quad9
+  forward-addr: 2620:fe::fe@853#dns.quad9.net
+  forward-addr: 9.9.9.9@853#dns.quad9.net
+  forward-addr: 2620:fe::9@853#dns.quad9.net
+  forward-addr: 149.112.112.112@853#dns.quad9.net
+  # Cloudflare DNS
+  # forward-addr: 2606:4700:4700::1111@853#1dot1dot1dot1.cloudflare-dns.com
+  # forward-addr: 2606:4700:4700::1001@853#1dot0dot0dot1.cloudflare-dns.com
+  forward-addr: 1.1.1.1@853#cloudflare-dns.com
+  forward-addr: 1.0.0.1@853#cloudflare-dns.com
+  forward-first: yes # try direct if forwarder fails

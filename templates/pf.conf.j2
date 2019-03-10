@@ -1,0 +1,46 @@
+intra = "vio0"
+vpn = "enc0"
+
+set reassemble yes
+set block-policy return
+set loginterface egress
+
+{% if hetun_block_ads %}
+set skip on { lo }
+# Unbound will resolve requests to ad/malware domains to be the
+# hetun_vpn_blackhole_ip. Here, we block all requests to that IP to 
+# prevent ad loading.
+block return in quick on $vpn from {{ hetun_dhcp_cdir }} to {{ hetun_vpn_blackhole_ip }} 
+# We let other traffic on the vpn interface pass in
+pass in quick on $vpn from {{ hetun_dhcp_cdir }} to any
+{% else %}
+set skip on { lo, enc0 }
+{% endif %}
+
+
+
+match in all scrub (no-df random-id max-mss 1440)
+
+table <ossec_fwtable> persist
+table <badguys> persist file "/etc/badguys"
+
+block in quick  on egress from <badguys> label "bad"
+block out quick on egress to <badguys> label "bad"
+block in quick  on egress from <ossec_fwtable> label "bad"
+block out quick on egress to <ossec_fwtable> label "bad"
+block in quick from urpf-failed label uRPF
+
+
+block return log
+
+pass out all modulate state
+
+pass in on egress proto { ah, esp }
+pass in on egress proto udp to (egress) port { isakmp, ipsec-nat-t }
+pass out on egress from {{ hetun_dhcp_cdir }} to any nat-to (egress)
+pass out on $intra from {{ hetun_dhcp_cdir }} to $intra:network nat-to ($intra)
+
+pass in quick inet proto icmp icmp-type { echoreq, unreach }
+
+pass in on egress proto tcp from any to (egress) port 22 keep state (max-src-conn 40, max-src-conn-rate 10/30, overload <badguys> flush global)
+pass in on $intra proto { udp tcp } from any to ($intra) port 53

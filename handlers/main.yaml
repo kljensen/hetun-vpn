@@ -1,0 +1,18 @@
+- name: Reload pf configuration
+  shell: pfctl -f /etc/pf.conf
+
+- name: Reload iked service
+  service:
+    name: iked
+    state: reloaded
+    enabled: true
+
+- name: Reload unbound service
+  service:
+    name: unbound
+    state: reloaded
+    enabled: true
+    
+- name: Reload network configuration
+  shell: sh /etc/netstart enc0 && sh /etc/netstart
+  ignore_errors: false
