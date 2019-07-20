@@ -93,7 +93,7 @@
                 <key>LocalIdentifier</key>
                 <string>{{ item.0.username }}</string>
                 <key>PayloadCertificateUUID</key>
-                <string>{{ hetun_pkcs12_payload_certificate_uuid }}</string>
+                <string>{{ hetun.pkcs12_payload_certificate_uuid }}</string>
                 <key>CertificateType</key>
                 <string>RSA</string>
                 <key>ServerCertificateIssuerCommonName</key>
@@ -101,11 +101,11 @@
                 <!-- Notice that this is the ca name "vpn" with " ca" added. ios expects this-->
                 <string>VPN CA</string>
                 <key>ServerCertificateCommonName</key>
-                <string>{{ hetun_hostname }}</string>
+                <string>{{ hetun.hostname }}</string>
                 <key>RemoteAddress</key>
-                <string>{{ hetun_fqdn_or_ip_address }}</string>
+                <string>{{ hetun.fqdn_or_ip_address }}</string>
                 <key>RemoteIdentifier</key>
-                <string>{{ hetun_fqdn_or_ip_address }}</string>
+                <string>{{ hetun.fqdn_or_ip_address }}</string>
                 <key>UseConfigurationAttributeInternalIPSubnet</key>
                 <integer>0</integer>
             </dict>
@@ -119,11 +119,11 @@
             <key>PayloadDisplayName</key>
             <string>VPN</string>
             <key>PayloadIdentifier</key>
-            <string>com.apple.vpn.managed.{{ hetun_vpn_payload_uuid }}</string>
+            <string>com.apple.vpn.managed.{{ hetun.vpn_payload_uuid }}</string>
             <key>PayloadType</key>
             <string>com.apple.vpn.managed</string>
             <key>PayloadUUID</key>
-            <string>{{ hetun_vpn_payload_uuid }}</string>
+            <string>{{ hetun.vpn_payload_uuid }}</string>
             <key>PayloadVersion</key>
             <real>1</real>
             <key>Proxies</key>
@@ -134,7 +134,7 @@
                 <integer>0</integer>
             </dict>
             <key>UserDefinedName</key>
-            <string>{{ hetun_hostname }} IKEv2 VPN</string>
+            <string>{{ hetun.hostname }} IKEv2 VPN</string>
             <key>VPNType</key>
             <string>IKEv2</string>
         </dict>
@@ -150,11 +150,11 @@
             <key>PayloadDisplayName</key>
             <string>{{ item.0.username }}.p12</string>
             <key>PayloadIdentifier</key>
-            <string>com.apple.security.pkcs12.{{ hetun_pkcs12_payload_certificate_uuid }}</string>
+            <string>com.apple.security.pkcs12.{{ hetun.pkcs12_payload_certificate_uuid }}</string>
             <key>PayloadType</key>
             <string>com.apple.security.pkcs12</string>
             <key>PayloadUUID</key>
-            <string>{{ hetun_pkcs12_payload_certificate_uuid }}</string>
+            <string>{{ hetun.pkcs12_payload_certificate_uuid }}</string>
             <key>PayloadVersion</key>
             <integer>1</integer>
         </dict>
@@ -168,19 +168,19 @@
             <key>PayloadDescription</key>
             <string>Adds a CA root certificate</string>
             <key>PayloadDisplayName</key>
-            <string>{{ hetun_hostname }}</string>
+            <string>{{ hetun.hostname }}</string>
             <key>PayloadIdentifier</key>
-            <string>com.apple.security.root.{{ hetun_ca_payload_identifier_uuid }}</string>
+            <string>com.apple.security.root.{{ hetun.ca_payload_identifier_uuid }}</string>
             <key>PayloadType</key>
             <string>com.apple.security.root</string>
             <key>PayloadUUID</key>
-            <string>{{ hetun_ca_payload_identifier_uuid }}</string>
+            <string>{{ hetun.ca_payload_identifier_uuid }}</string>
             <key>PayloadVersion</key>
             <integer>1</integer>
         </dict>
     </array>
     <key>PayloadDisplayName</key>
-    <string>{{ hetun_hostname }} IKEv2</string>
+    <string>{{ hetun.hostname }} IKEv2</string>
     <key>PayloadIdentifier</key>
     <string>donut.local.{{ 500000 | random | to_uuid | upper }}</string>
     <key>PayloadRemovalDisallowed</key>

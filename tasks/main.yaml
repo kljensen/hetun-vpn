@@ -18,7 +18,7 @@
     group: wheel
     mode: 0640
     content: |
-      inet {{ hetun_enc_ip }} {{ hetun_enc_netmask }} {{ hetun_enc_broadcast }}
+      inet {{ hetun.enc_ip }} {{ hetun.enc_netmask }} {{ hetun.enc_broadcast }}
       up
   changed_when: true
   register: enc_configuration
@@ -36,7 +36,7 @@
   tags:
     - adblock
     - unbound
-  when: hetun_unbound and hetun_block_ads
+  when: hetun.unbound and hetun.block_ads
   register: ad_configuration
 
 - name: Write unbound.conf
@@ -45,7 +45,7 @@
     dest: /var/unbound/etc/unbound.conf
     mode: 0600
   tags: unbound
-  when: hetun_unbound and hetun_block_ads
+  when: hetun.unbound and hetun.block_ads
   register: unbound_configuration
 
 - name: Write resolv.conf
@@ -56,7 +56,7 @@
   tags:
     - resolv
     - unbound
-  when: hetun_unbound or resolv_upstream_dns
+  when: hetun.unbound or resolv_upstream_dns
   register: resolv_configuration
 
 - name: Enable unbound service
@@ -64,7 +64,7 @@
     name: unbound
     state: started
     enabled: true
-  when: hetun_unbound
+  when: hetun.unbound
   tags: unbound
 
 - name: Restart unbound
@@ -76,7 +76,7 @@
   tags: unbound
 
 - name: Create vpn certificate authority
-  command: ikectl -q ca vpn create password {{hetun_ca_passphrase}}
+  command: ikectl -q ca vpn create password {{hetun.ca_passphrase}}
   args:
     creates: /etc/ssl/vpn
     stdin: |
@@ -95,26 +95,26 @@
   command: ikectl ca vpn install
   when: create_ca.changed
 
-- name: Create hetun_hostname/server certificate
-  command: "ikectl ca vpn certificate {{hetun_hostname}} create server"
+- name: Create hetun.hostname/server certificate
+  command: "ikectl ca vpn certificate {{hetun.hostname}} create server"
   args:
-    creates: /etc/ssl/vpn/{{hetun_hostname}}.crt
+    creates: /etc/ssl/vpn/{{hetun.hostname}}.crt
     stdin: |
       .
       .
       .
       .
       .
-      "{{hetun_hostname}}"
+      "{{hetun.hostname}}"
       .
   register: create_server_cert
   tags: vpn-keys
 
 - name: Install server certificate
-  command: ikectl ca vpn certificate {{hetun_hostname}} install
+  command: ikectl ca vpn certificate {{hetun.hostname}} install
   when: create_server_cert.changed
 
-- debug: var=hetun_vpn_users
+- debug: var=hetun.vpn_users
   tags: vpn-users
 
 - name: Create vpn user certificates
@@ -129,7 +129,7 @@
       .
       "{{item.username}}"
       "{{item.email}}"
-  with_items: "{{hetun_vpn_users}}"
+  with_items: "{{hetun.vpn_users}}"
   register: vpn_user_certs
   tags: vpn-users
 
@@ -154,20 +154,20 @@
   args:
     chdir: /var/client-certificates
     creates: "/var/client-certificates/export/{{ item.username }}.pfx"
-  with_items: "{{hetun_vpn_users}}"
+  with_items: "{{hetun.vpn_users}}"
   tags: vpn-users-export
 
 # - name: Register p12 PayloadContent
 #   shell: "cat /var/client-certificates/export/{{ item.username }}.pfx | uuencode -m {{ item.username }}.pfx"
 #   register:  PayloadContent
-#   with_items: "{{hetun_vpn_users}}"
+#   with_items: "{{hetun.vpn_users}}"
 #   tags: vpn-users-export
 
 - name: Read user p12 (pfx) files
   slurp:
     src: "/var/client-certificates/export/{{ item.username }}.pfx"
   register: pfx
-  with_items: "{{hetun_vpn_users}}"
+  with_items: "{{hetun.vpn_users}}"
   tags: vpn-users-export
 
 - debug: var=pfx
@@ -199,7 +199,7 @@
     dest: /var/client-certificates/export//{{ item.0.username }}.mobileconfig
     mode: 0600
   with_together:
-    - "{{ hetun_vpn_users }}"
+    - "{{ hetun.vpn_users }}"
     - "{{ pfx.results }}"
   tags: vpn-users-export
 

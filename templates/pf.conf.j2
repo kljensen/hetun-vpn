@@ -1,18 +1,18 @@
-intra = "{{ hetun_interface }}"
+intra = "{{ hetun.interface }}"
 vpn = "enc0"
 
 set reassemble yes
 set block-policy return
 set loginterface egress
 
-{% if hetun_block_ads %}
+{% if hetun.block_ads %}
 set skip on { lo }
 # Unbound will resolve requests to ad/malware domains to be the
-# hetun_vpn_blackhole_ip. Here, we block all requests to that IP to 
+# hetun.vpn_blackhole_ip. Here, we block all requests to that IP to 
 # prevent ad loading.
-block return in quick on $vpn from {{ hetun_dhcp_cdir }} to {{ hetun_vpn_blackhole_ip }} 
+block return in quick on $vpn from {{ hetun.dhcp_cdir }} to {{ hetun.vpn_blackhole_ip }} 
 # We let other traffic on the vpn interface pass in
-pass in quick on $vpn from {{ hetun_dhcp_cdir }} to any
+pass in quick on $vpn from {{ hetun.dhcp_cdir }} to any
 {% else %}
 set skip on { lo, enc0 }
 {% endif %}
@@ -37,8 +37,8 @@ pass out all modulate state
 
 pass in on egress proto { ah, esp }
 pass in on egress proto udp to (egress) port { isakmp, ipsec-nat-t }
-pass out on egress from {{ hetun_dhcp_cdir }} to any nat-to (egress)
-pass out on $intra from {{ hetun_dhcp_cdir }} to $intra:network nat-to ($intra)
+pass out on egress from {{ hetun.dhcp_cdir }} to any nat-to (egress)
+pass out on $intra from {{ hetun.dhcp_cdir }} to $intra:network nat-to ($intra)
 
 pass in quick inet proto icmp icmp-type { echoreq, unreach }
 

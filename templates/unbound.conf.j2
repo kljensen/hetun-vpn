@@ -49,7 +49,7 @@ server:
 	# Serve zones authoritatively from Unbound to resolver clients.
 	# Not for external service.
 	#
-	{% if hetun_block_ads %}
+	{% if hetun.block_ads %}
     include: /var/unbound/etc/ads.conf
 	{% endif %}
 	#local-zone: "local." static

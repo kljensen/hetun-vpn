@@ -3,8 +3,8 @@ from 0.0.0.0/0 to 0.0.0.0/0 \
 local egress peer any \
 ikesa auth hmac-sha2-512 enc aes-256 prf hmac-sha2-512 group ecp384 \
 childsa enc aes-256-gcm prf hmac-sha2-512 group ecp384 \
-srcid {{hetun_hostname}} \
+srcid {{hetun.hostname}} \
 config protected-subnet 0.0.0.0/0 \
-config address {{ hetun_dhcp_cdir }} \
-config name-server {{ hetun_enc_ip }} \
+config address {{ hetun.dhcp_cdir }} \
+config name-server {{ hetun.enc_ip }} \
 tag "IKED" tap enc0
