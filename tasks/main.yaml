@@ -56,7 +56,7 @@
   tags:
     - resolv
     - unbound
-  when: hetun_unbound and hetun_block_ads
+  when: hetun_unbound or resolv_upstream_dns
   register: resolv_configuration
 
 
