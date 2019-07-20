@@ -83,17 +83,20 @@ remote-control:
 # Use an upstream forwarder (recursive resolver) for specific zones.
 # Example addresses given below are public resolvers valid as of 2014/03.
 #
+{% if hetun.unbound.forward_zones %}
+{% for forward_zone in hetun.unbound.forward_zones %}
 forward-zone:
-  name: "." # Use for all queries
-  forward-tls-upstream: yes
-  # Quad9
-  forward-addr: 2620:fe::fe@853#dns.quad9.net
-  forward-addr: 9.9.9.9@853#dns.quad9.net
-  forward-addr: 2620:fe::9@853#dns.quad9.net
-  forward-addr: 149.112.112.112@853#dns.quad9.net
-  # Cloudflare DNS
-  # forward-addr: 2606:4700:4700::1111@853#1dot1dot1dot1.cloudflare-dns.com
-  # forward-addr: 2606:4700:4700::1001@853#1dot0dot0dot1.cloudflare-dns.com
-  forward-addr: 1.1.1.1@853#cloudflare-dns.com
-  forward-addr: 1.0.0.1@853#cloudflare-dns.com
+  name: "{{forward_zone.name}}"
+{% if forward_zone.forward_first %}
   forward-first: yes # try direct if forwarder fails
+{% endif %}
+{% if forward_zone.forward_tls_upstream %}
+  forward-tls-upstream: yes
+{% else %}
+  forward-tls-upstream: no 
+{% endif %}
+{% for address in forward_zone.addresses %}
+  forward-addr: {{address}}
+{% endfor %}
+{% endfor %}
+{% endif %}
