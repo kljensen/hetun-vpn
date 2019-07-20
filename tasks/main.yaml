@@ -56,7 +56,7 @@
   tags:
     - resolv
     - unbound
-  when: hetun.unbound or resolv_upstream_dns
+  when: hetun.unbound or hetun.resolv_upstream_dns
   register: resolv_configuration
 
 - name: Enable unbound service
