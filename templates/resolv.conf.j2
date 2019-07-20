@@ -1,5 +1,5 @@
-{% if resolv_upstream_dns %}
-nameserver {{resolv_upstream_dns}}
+{% if hetun.resolv_upstream_dns %}
+nameserver {{hetun.resolv_upstream_dns}}
 {% else %}
 nameserver 127.0.0.1
 {% endif %}
