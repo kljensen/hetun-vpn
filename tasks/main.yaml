@@ -3,7 +3,7 @@
     name: net.inet.{{item}}
     value: 1
     reload: no
-    sysctl_set: yes 
+    sysctl_set: yes
   with_items:
     - ip.forwarding
     - esp.enable
@@ -20,10 +20,10 @@
     content: |
       inet {{ hetun_enc_ip }} {{ hetun_enc_netmask }} {{ hetun_enc_broadcast }}
       up
-  changed_when: true  
+  changed_when: true
   register: enc_configuration
-  # notify: Reload network configuration
 
+  # notify: Reload network configuration
 - name: Bring up enc0
   command: sh /etc/netstart enc0
   when: enc_configuration.changed
@@ -59,7 +59,6 @@
   when: hetun_unbound or resolv_upstream_dns
   register: resolv_configuration
 
-
 - name: Enable unbound service
   service:
     name: unbound
@@ -78,17 +77,17 @@
 
 - name: Create vpn certificate authority
   command: ikectl -q ca vpn create password {{hetun_ca_passphrase}}
-  args: 
-      creates: /etc/ssl/vpn
-      stdin: |
-        .
-        .
-        .
-        .
-        .
-        .
-        vpn
-        .
+  args:
+    creates: /etc/ssl/vpn
+    stdin: |
+      .
+      .
+      .
+      .
+      .
+      .
+      vpn
+      .
   register: create_ca
   tags: vpn-keys
 
@@ -98,20 +97,20 @@
 
 - name: Create hetun_hostname/server certificate
   command: "ikectl ca vpn certificate {{hetun_hostname}} create server"
-  args: 
-      creates: /etc/ssl/vpn/{{hetun_hostname}}.crt
-      stdin: |
-        .
-        .
-        .
-        .
-        .
-        "{{hetun_hostname}}"
-        .
+  args:
+    creates: /etc/ssl/vpn/{{hetun_hostname}}.crt
+    stdin: |
+      .
+      .
+      .
+      .
+      .
+      "{{hetun_hostname}}"
+      .
   register: create_server_cert
   tags: vpn-keys
 
-- name: Install server certificate 
+- name: Install server certificate
   command: ikectl ca vpn certificate {{hetun_hostname}} install
   when: create_server_cert.changed
 
@@ -120,16 +119,16 @@
 
 - name: Create vpn user certificates
   command: "ikectl ca vpn certificate {{ item.username }} create client"
-  args: 
-      creates: "/etc/ssl/vpn/{{ item.username}}.crt"
-      stdin: |
-        .
-        .
-        .
-        .
-        .
-        "{{item.username}}"
-        "{{item.email}}"
+  args:
+    creates: "/etc/ssl/vpn/{{ item.username}}.crt"
+    stdin: |
+      .
+      .
+      .
+      .
+      .
+      "{{item.username}}"
+      "{{item.email}}"
   with_items: "{{hetun_vpn_users}}"
   register: vpn_user_certs
   tags: vpn-users
@@ -166,14 +165,13 @@
 
 - name: Read user p12 (pfx) files
   slurp:
-      src: "/var/client-certificates/export/{{ item.username }}.pfx"
-  register:  pfx
+    src: "/var/client-certificates/export/{{ item.username }}.pfx"
+  register: pfx
   with_items: "{{hetun_vpn_users}}"
   tags: vpn-users-export
 
 - debug: var=pfx
   tags: vpn-users-export
-
 
 # - name: Combine the vpn and vpn ca certs
 #   slurp:
@@ -233,13 +231,9 @@
     mode: 0600
   notify: Reload iked service
   tags: iked
-
-
   # ikesa auth hmac-sha2-256 enc aes-256 prf hmac-sha2-256 group ecp256
 #       ikesa auth hmac-sha2-256 enc aes-256 prf hmac-sha2-256 group ecp256 \
-      # aes256gcm16-ecp384,aes256-sha2_512-prfsha512-ecp384
-
-
+# aes256gcm16-ecp384,aes256-sha2_512-prfsha512-ecp384
 
 # - name:  Ensure iked service is running/enabled
 #   service:
