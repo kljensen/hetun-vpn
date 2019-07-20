@@ -6,5 +6,5 @@ childsa enc aes-256-gcm prf hmac-sha2-512 group ecp384 \
 srcid {{hetun.hostname}} \
 config protected-subnet 0.0.0.0/0 \
 config address {{ hetun.dhcp_cdir }} \
-config name-server {{ hetun.enc_ip }} \
+config name-server {% if hetun.iked.name_server is not none %}{{hetun.iked.name_server}}{%else%}{{ hetun.enc_ip }}{%endif%}} \
 tag "IKED" tap enc0
