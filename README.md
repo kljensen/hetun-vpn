@@ -1,7 +1,7 @@
-
-<p align="center">
-  <h1>🐡⚡💻<br>Hetun VPN</h1>
-</p>
+<h1 align="center">
+  🐡⚡💻<br>Hetun VPN
+</h1>
+<p align="center">Easily create a road-warrior VPN based on OpenBSD</p>
 
 ---
 
