@@ -3,8 +3,6 @@
 </h1>
 <p align="center">Easily create a road-warrior VPN based on OpenBSD</p>
 
----
-
 I'd like this to be something like [Algo](https://github.com/trailofbits/algo)
 but based on [OpenBSD](https://www.openbsd.org/) and the [OpenIKED](http://www.openiked.org/).
 
